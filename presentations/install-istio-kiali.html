@@ -75,11 +75,13 @@ chmod +x $HOME/install-gke-istio-kiali.sh
             Set Google Cloud Project ID from qwiklab
 						<pre class="bash">
               <code data-trim data-line-numbers="1-3">
-                gcloud config set project ${PROJECT_ID}
+                gcloud config set project $PROJECT_ID
+                gcloud config set compute/zone europe-west2-a
 
                 # Output
 
                 Updated property [core/project].
+                Updated property [compute/zone].
               </code>
             </pre>
           </p>
@@ -177,7 +179,7 @@ kubectl get pods -n istio-system -w
 						<h3>[1.6.0] Expose the Telemetry add-ons</h3>
 						<p>For <span class="my-red">demo</span> purposes we will use <span class="my-red">HTTP</span> instead <span class="my-green">HTTPS</span></p>
 						<pre class="bash"><code data-trim data-line-numbers="1-9">
-curl -L https://git.io/fj2rL | kubectl apply -f -
+curl -L https://git.io/Jeadb | kubectl apply -f -
 
 # Define variables
 export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
@@ -265,7 +267,7 @@ echo http://${INGRESS_HOST}:${INGRESS_PORT}/productpage
 
 					<section>
 						<h3>[1.8.0] Upgrade Kiali</h3>
-						<p>Istio ships a v0.16 version, let's upgrade to a newer one</p>
+						<p>Istio ships a v1.4 version, let's upgrade to a newer one</p>
 						<pre class="bash"><code data-trim data-line-numbers="1-5">
 curl -L https://git.io/Jea7m | envsubst > $HOME/update-kiali-cr.yaml
 bash <(curl -L https://git.io/getLatestKialiOperator) --kiali-cr $HOME/update-kiali-cr.yaml
