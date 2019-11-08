@@ -54,18 +54,12 @@
 				<section>
 					<section>
 						<h3>[3.2.0] mTLS travel-agency</h3>
-						<pre class="bash"><code data-trim data-line-numbers="1-5">
+						<pre class="bash"><code data-trim data-line-numbers="1-2">
 # Enable mTLS in travel-agency
 kubectl apply -f <(curl -L https://git.io/fjKnR)
 
-# Disable mTLS for ingress
-kubectl apply -f <(curl -L https://git.io/JeVtc)
-
 # Delete mTLS in travel-agency
 kubectl delete -f <(curl -L https://git.io/fjKnR)
-
-# Enable mTLS for ingress
-kubectl delete -f <(curl -L https://git.io/JeVtc)
 </code></pre>
 						<p>
 							Enable mutual TLS on <span class="my-green">travel-agency</span> services.
@@ -84,12 +78,18 @@ kubectl delete -f <(curl -L https://git.io/JeVtc)
 
 					<section>
 						<h3>[3.2.2] Mesh Policy</h3>
-						<pre class="bash"><code data-trim data-line-numbers="1-2">
+						<pre class="bash"><code data-trim data-line-numbers="1-5">
 # Enable MeshPolicy
 kubectl apply -f <(curl -L https://git.io/fjKnY)
 
+# Disable mTLS for ingress
+kubectl apply -f <(curl -L https://git.io/JeVtc)
+
 # Delete MeshPolicy
 kubectl delete -f <(curl -L https://git.io/fjKnY)
+
+# Enable mTLS for ingress
+kubectl delete -f <(curl -L https://git.io/JeVtc)
 </code></pre>
 						<p>
 							Apply mutual TLS in <span class="my-red">all namespaces</span>
