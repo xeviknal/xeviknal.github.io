@@ -54,12 +54,18 @@
 				<section>
 					<section>
 						<h3>[3.2.0] mTLS travel-agency</h3>
-						<pre class="bash"><code data-trim data-line-numbers="1-2">
+						<pre class="bash"><code data-trim data-line-numbers="1-5">
 # Enable mTLS in travel-agency
 kubectl apply -f <(curl -L https://git.io/fjKnR)
 
+# Disable mTLS for ingress
+kubectl apply -f <(curl -L https://git.io/JeVtc)
+
 # Delete mTLS in travel-agency
 kubectl delete -f <(curl -L https://git.io/fjKnR)
+
+# Enable mTLS for ingress
+kubectl delete -f <(curl -L https://git.io/JeVtc)
 </code></pre>
 						<p>
 							Enable mutual TLS on <span class="my-green">travel-agency</span> services.

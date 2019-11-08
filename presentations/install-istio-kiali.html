@@ -91,10 +91,9 @@ chmod +x $HOME/install-gke-istio-kiali.sh
 					<h3>[1.1] Create a Kubernetes cluster</h3>
 					<p>
 						Choose a cluster name i.e. <span class="my-green">xavi-cluster</span>
-					<pre class="bash"><code data-trim data-line-numbers="1-4">
+					<pre class="bash"><code data-trim data-line-numbers="1-3">
 gcloud container clusters create xavi-cluster \
   --cluster-version latest \
-  --zone europe-west2-a \
   --num-nodes 6
 
 # Output
@@ -112,9 +111,8 @@ xavi-cluster  europe-west2-a  1.13.7-gke.8    35.242.145.183  n1-standard-1  1.1
 				<section>
 					<h3>[1.2] Retrieve your credentials</h3>
 					<p></p>
-					<pre class="bash"><code data-trim data-line-numbers="1-2">
-gcloud container clusters get-credentials xavi-cluster \
-  -z europe-west2-a
+					<pre class="bash"><code data-trim data-line-numbers="1">
+gcloud container clusters get-credentials xavi-cluster
 
 # Output
 
