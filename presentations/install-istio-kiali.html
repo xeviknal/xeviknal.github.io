@@ -49,11 +49,10 @@
 						<ol>
 							<li><a href="https://cloud.google.com/sdk" target="_blank"><code>google-cloud-sdk</code></a> correctly installed</li>
 							<li class="fragment"><a href="https://cloud.google.com/sdk/docs/components#managing_cloud_sdk_components" target="_blank"><code>kubectl</code></a> client installed</li>
-							<li class="fragment"><a href="https://helm.sh/docs/using_helm/#installing-helm"><code>helm</code></a> correctly installed</li>
-							<li class="fragment"><a href="https://archive.istio.io/v1.1/docs/setup/kubernetes/download/"><code>Istio 1.1.9</code></a> downloaded</li>
+							<li class="fragment"><a href="https://helm.sh/docs/using_helm/#installing-helm" target="_blank"><code>helm</code></a> correctly installed</li>
+							<li class="fragment"><a href="https://istio.io/docs/setup/#downloading-the-release" target="_blank"><code>Istio 1.3.4</code></a> downloaded</li>
 							<li class="fragment"><code><span class="my-green">ISTIO_HOME</span></code> variable defined</li>
-							<li class="fragment">Update/validate <code><span class="my-green">PATH</span></code></li>
-							<li class="fragment">Bonus track: No clashes with other <span class="my-red">kubectl</span> clients !</li>
+							<li class="fragment">Update/validate PATH</li>
 						</ol>
 					</section>
 
@@ -71,21 +70,39 @@ chmod +x $HOME/install-gke-istio-kiali.sh
 				</section>
 
 				<section>
+					<h3>[1.1] Set your project ID</h3>
+					<p>
+            Set Google Cloud Project ID from qwiklab
+						<pre class="bash">
+              <code data-trim data-line-numbers="1-3">
+                gcloud config set project $PROJECT_ID
+                gcloud config set compute/zone europe-west2-a
+
+                # Output
+
+                Updated property [core/project].
+                Updated property [compute/zone].
+              </code>
+            </pre>
+          </p>
+				</section>
+
+				<section>
 					<h3>[1.1] Create a Kubernetes cluster</h3>
 					<p>
-						Choose a cluster name i.e. <span class="my-green">lucas-cluster</span>
+						Choose a cluster name i.e. <span class="my-green">xavi-cluster</span>
 					<pre class="bash"><code data-trim data-line-numbers="1-3">
-gcloud container clusters create lucas-cluster \
+gcloud container clusters create xavi-cluster \
   --cluster-version latest \
   --num-nodes 6
 
 # Output
 
-Creating cluster lucas-cluster... Cluster is being health-checked (master is healthy)...done.
-Created [https://container.googleapis.com/v1/projects/kubernetes-istio-kiali/zones/europe-west2-a/clusters/lucas-cluster].
-kubeconfig entry generated for lucas-cluster.
+Creating cluster xavi-cluster... Cluster is being health-checked (master is healthy)...done.
+Created [https://container.googleapis.com/v1/projects/kubernetes-istio-kiali/zones/europe-west2-a/clusters/xavi-cluster].
+kubeconfig entry generated for xavi-cluster.
 NAME           LOCATION        MASTER_VERSION  MASTER_IP       MACHINE_TYPE   NODE_VERSION  NUM_NODES  STATUS
-lucas-cluster  europe-west2-a  1.13.7-gke.8    35.242.145.183  n1-standard-1  1.13.7-gke.8  4          RUNNING
+xavi-cluster  europe-west2-a  1.13.7-gke.8    35.242.145.183  n1-standard-1  1.13.7-gke.8  4          RUNNING
 
 					</code></pre>
 					</p>
@@ -95,12 +112,12 @@ lucas-cluster  europe-west2-a  1.13.7-gke.8    35.242.145.183  n1-standard-1  1.
 					<h3>[1.2] Retrieve your credentials</h3>
 					<p></p>
 					<pre class="bash"><code data-trim data-line-numbers="1">
-gcloud container clusters get-credentials lucas-cluster
+gcloud container clusters get-credentials xavi-cluster
 
 # Output
 
 Fetching cluster endpoint and auth data.
-kubeconfig entry generated for lucas-cluster.
+kubeconfig entry generated for xavi-cluster.
 
 </code></pre>
 				</section>
@@ -115,7 +132,7 @@ kubectl create clusterrolebinding cluster-admin-binding \
 
 # Output
 
-clusterrolebinding "cluster-admin-binding" created
+clusterrolebinding.rbac.authorization.k8s.io/cluster-admin-binding created
 
 </code></pre>
 				</section>
@@ -128,16 +145,17 @@ kubectl create namespace istio-system
 helm template install/kubernetes/helm/istio-init --name istio-init --namespace istio-system | kubectl apply -f -
 
 # Output
+configmap/istio-crd-10 created
+configmap/istio-crd-11 created
+configmap/istio-crd-12 created
+serviceaccount/istio-init-service-account created
+clusterrole.rbac.authorization.k8s.io/istio-init-istio-system created
+clusterrolebinding.rbac.authorization.k8s.io/istio-init-admin-role-binding-istio-system created
+job.batch/istio-init-crd-10-1.3.4 created
+job.batch/istio-init-crd-11-1.3.4 created
+job.batch/istio-init-crd-12-1.3.4 created
 
-configmap "istio-crd-10" created
-configmap "istio-crd-11" created
-serviceaccount "istio-init-service-account" created
-clusterrole "istio-init-istio-system" created
-clusterrolebinding "istio-init-admin-role-binding-istio-system" created
-job "istio-init-crd-10" created
-job "istio-init-crd-11" created
-
-# Verify 53 CRDs are created.
+# Verify 23 CRDs are created.
 kubectl get crds | grep 'istio.io\|certmanager.k8s.io' | wc -l
 
 </code></pre>
@@ -159,7 +177,7 @@ kubectl get pods -n istio-system -w
 						<h3>[1.6.0] Expose the Telemetry add-ons</h3>
 						<p>For <span class="my-red">demo</span> purposes we will use <span class="my-red">HTTP</span> instead <span class="my-green">HTTPS</span></p>
 						<pre class="bash"><code data-trim data-line-numbers="1-9">
-curl -L https://git.io/fj2rL | kubectl apply -f -
+curl -L https://git.io/Jeadb | kubectl apply -f -
 
 # Define variables
 export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
@@ -174,16 +192,13 @@ export JAEGER_URL="http://${INGRESS_HOST}:15032/jaeger"
 					<section>
 						<h3>[1.6.1] Open your URLs</h3>
 						<pre class="bash"><code data-trim data-line-numbers="1-10">
-# Linux helper
-# xdg-open is a command to open a browser from the command line.
-# Mac users can use "open" command
-# Windows users can use "cmd" command
-# Otherwise, the check is just to confirm you can access addons from your browser
+# Showing all the URLS
+# Click links on terminal to open a new tab
 
-xdg-open ${KIALI_URL} && \
-xdg-open ${PROMETHEUS_URL} && \
-xdg-open ${GRAFANA_URL} && \
-xdg-open ${JAEGER_URL}
+echo "Kiali: ${KIALI_URL}" && \
+echo "Prometheus: ${PROMETHEUS_URL}" && \
+echo "Grafana: ${GRAFANA_URL}" && \
+echo "Jaeger: ${JAEGER_URL}"
 </code></pre>
 					</section>
 
@@ -227,7 +242,7 @@ kubectl apply -f samples/bookinfo/networking/bookinfo-gateway.yaml
 
 # Verify user can access Bookinfo app
 export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].port}')
-xdg-open http://${INGRESS_HOST}:${INGRESS_PORT}/productpage
+echo http://${INGRESS_HOST}:${INGRESS_PORT}/productpage
 </code></pre>
 						<p>
 							<img src="images/bookinfo.png" alt="bookinfo" width="250" />
@@ -250,10 +265,10 @@ xdg-open http://${INGRESS_HOST}:${INGRESS_PORT}/productpage
 
 					<section>
 						<h3>[1.8.0] Upgrade Kiali</h3>
-						<p>Istio ships a v0.16 version, let's upgrade to a newer one</p>
+						<p>Istio ships a v1.4 version, let's upgrade to a newer one</p>
 						<pre class="bash"><code data-trim data-line-numbers="1-5">
-curl -L https://git.io/fjohL | envsubst > $HOME/update-kiali-cr.yaml
-bash <(curl -L https://git.io/getLatestKialiOperator) -oiv v1.0.0 --kiali-cr $HOME/update-kiali-cr.yaml
+curl -L https://git.io/Jea7m | envsubst > $HOME/update-kiali-cr.yaml
+bash <(curl -L https://git.io/getLatestKialiOperator) --kiali-cr $HOME/update-kiali-cr.yaml
 
 # Verify Kiali pod is restarted
 kubectl get pods -n istio-system -w
@@ -279,8 +294,8 @@ kubectl get pods -n istio-system -w
 # kiali-operator namespace is "Terminating" but hanged
 kubectl patch kiali kiali -n kiali-operator -p '{"metadata":{"finalizers": []}}' --type=merge
 
-# Delete a kubernetes cluster i.e. lucas-cluster
-gcloud container clusters delete lucas-cluster
+# Delete a kubernetes cluster i.e. xavi-cluster
+gcloud container clusters delete xavi-cluster
 </code></pre>
 					</section>
 
